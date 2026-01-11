@@ -1,7 +1,29 @@
 .DS_Store
+node_modules/
+
+# Environment files (keep .example files)
 .env
-/node_modules/
+.env.local
+.env.staging
+.env.production
 
 # React Router
-/.react-router/
-/build/
+.react-router/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Testing
+coverage/
+
+# Temp files
+tmp/
+temp/
