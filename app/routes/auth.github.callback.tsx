@@ -28,8 +28,8 @@ export async function loader({ request }: Route.LoaderArgs) {
     // Get GitHub user info
     const githubUser = await getGitHubUser(accessToken);
 
-    // Find or create user in our database
-    const user = await findOrCreateUser(githubUser);
+    // Find or create user in our database (also stores the access token)
+    const user = await findOrCreateUser(githubUser, accessToken);
 
     // Create session and redirect to dashboard
     return createUserSession(user.id, "/dashboard");
