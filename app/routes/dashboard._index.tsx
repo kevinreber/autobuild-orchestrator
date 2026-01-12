@@ -1,7 +1,5 @@
 import { Link } from "react-router";
 import type { Route } from "./+types/dashboard._index";
-import { requireUser } from "~/lib/auth.server";
-import { getDb } from "~/lib/db.server";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -17,6 +15,9 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
+  const { requireUser } = await import("~/lib/auth.server");
+  const { getDb } = await import("~/lib/db.server");
+
   const user = await requireUser(request);
   const db = getDb();
 

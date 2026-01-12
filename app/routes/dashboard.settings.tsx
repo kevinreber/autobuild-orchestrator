@@ -1,8 +1,5 @@
 import { Form, useNavigation } from "react-router";
 import type { Route } from "./+types/dashboard.settings";
-import { requireUser } from "~/lib/auth.server";
-import { getDb } from "~/lib/db.server";
-import { encrypt, decrypt } from "~/lib/encryption.server";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -20,6 +17,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
+  const { requireUser } = await import("~/lib/auth.server");
   const user = await requireUser(request);
 
   return {
@@ -28,6 +26,10 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export async function action({ request }: Route.ActionArgs) {
+  const { requireUser } = await import("~/lib/auth.server");
+  const { getDb } = await import("~/lib/db.server");
+  const { encrypt } = await import("~/lib/encryption.server");
+
   const user = await requireUser(request);
   const formData = await request.formData();
   const action = formData.get("_action");

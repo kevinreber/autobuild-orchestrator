@@ -1,6 +1,5 @@
 import { redirect } from "react-router";
 import type { Route } from "./+types/home";
-import { getUser, getGitHubAuthUrl } from "~/lib/auth.server";
 import { Button } from "~/components/ui/button";
 import { Github, Zap, GitPullRequest, Kanban } from "lucide-react";
 
@@ -16,6 +15,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
+  const { getUser, getGitHubAuthUrl } = await import("~/lib/auth.server");
   const user = await getUser(request);
   if (user) {
     return redirect("/dashboard");

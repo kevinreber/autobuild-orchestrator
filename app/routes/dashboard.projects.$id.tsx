@@ -1,11 +1,9 @@
 import { redirect, Link } from "react-router";
 import type { Route } from "./+types/dashboard.projects.$id";
-import { requireUser } from "~/lib/auth.server";
-import { getDb } from "~/lib/db.server";
 import { KanbanBoard } from "~/components/kanban-board";
 import { Button } from "~/components/ui/button";
 import { ArrowLeft, Github, ExternalLink, Settings } from "lucide-react";
-import type { Ticket, TicketStatus } from "~/types/database";
+import type { TicketStatus } from "~/types/database";
 
 export function meta({ data }: Route.MetaArgs) {
   return [
@@ -18,6 +16,9 @@ export function meta({ data }: Route.MetaArgs) {
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
+  const { requireUser } = await import("~/lib/auth.server");
+  const { getDb } = await import("~/lib/db.server");
+
   const user = await requireUser(request);
   const db = getDb();
 
@@ -46,6 +47,9 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 }
 
 export async function action({ request, params }: Route.ActionArgs) {
+  const { requireUser } = await import("~/lib/auth.server");
+  const { getDb } = await import("~/lib/db.server");
+
   const user = await requireUser(request);
   const formData = await request.formData();
   const action = formData.get("_action");

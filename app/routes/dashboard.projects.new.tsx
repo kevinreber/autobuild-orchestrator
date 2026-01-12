@@ -1,9 +1,6 @@
 import { redirect, Form, useNavigation } from "react-router";
 import type { Route } from "./+types/dashboard.projects.new";
-import { requireUser } from "~/lib/auth.server";
-import { getDb } from "~/lib/db.server";
-import { getUserRepos, type GitHubRepo } from "~/lib/github.server";
-import { exchangeCodeForToken, getGitHubUser } from "~/lib/auth.server";
+import type { GitHubRepo } from "~/lib/github.server";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -23,6 +20,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
+  const { requireUser } = await import("~/lib/auth.server");
   const user = await requireUser(request);
 
   // For now, we'll need the user to re-authorize with repo scope
@@ -33,6 +31,9 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export async function action({ request }: Route.ActionArgs) {
+  const { requireUser } = await import("~/lib/auth.server");
+  const { getDb } = await import("~/lib/db.server");
+
   const user = await requireUser(request);
   const formData = await request.formData();
 
