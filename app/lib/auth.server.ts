@@ -1,5 +1,6 @@
 import { createCookieSessionStorage, redirect } from "react-router";
 import { getDb } from "./db.server";
+import { encrypt, decrypt } from "./encryption.server";
 import type { User } from "~/types/database";
 
 function getSessionSecret(): string {
@@ -107,7 +108,7 @@ export function getGitHubAuthUrl(): string {
   const params = new URLSearchParams({
     client_id: clientId,
     redirect_uri: `${appUrl}/auth/github/callback`,
-    scope: "read:user user:email",
+    scope: "read:user user:email repo",
   });
 
   return `https://github.com/login/oauth/authorize?${params.toString()}`;
@@ -165,8 +166,12 @@ export async function getGitHubUser(accessToken: string): Promise<GitHubUser> {
   return response.json();
 }
 
-export async function findOrCreateUser(githubUser: GitHubUser): Promise<User> {
+export async function findOrCreateUser(
+  githubUser: GitHubUser,
+  accessToken: string
+): Promise<User> {
   const db = getDb();
+  const encryptedToken = encrypt(accessToken);
 
   // Try to find existing user
   let user = await db
@@ -176,12 +181,13 @@ export async function findOrCreateUser(githubUser: GitHubUser): Promise<User> {
     .executeTakeFirst();
 
   if (user) {
-    // Update user info if changed
+    // Update user info and token
     user = await db
       .updateTable("users")
       .set({
         github_username: githubUser.login,
         github_avatar_url: githubUser.avatar_url,
+        github_access_token: encryptedToken,
       })
       .where("id", "=", user.id)
       .returningAll()
@@ -194,10 +200,26 @@ export async function findOrCreateUser(githubUser: GitHubUser): Promise<User> {
         github_id: githubUser.id,
         github_username: githubUser.login,
         github_avatar_url: githubUser.avatar_url,
+        github_access_token: encryptedToken,
       })
       .returningAll()
       .executeTakeFirstOrThrow();
   }
 
   return user;
+}
+
+export async function getGitHubAccessToken(
+  request: Request
+): Promise<string | null> {
+  const user = await getUser(request);
+  if (!user || !user.github_access_token) {
+    return null;
+  }
+
+  try {
+    return decrypt(user.github_access_token);
+  } catch {
+    return null;
+  }
 }

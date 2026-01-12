@@ -107,14 +107,24 @@ export function KanbanBoard({
       { method: "post" }
     );
 
-    // If moving to in_progress and has API key, trigger agent
-    if (newStatus === "in_progress" && hasApiKey) {
-      // The agent will be triggered via the API route
+    // If moving to in_progress, trigger agent via GitHub Actions
+    if (newStatus === "in_progress") {
+      // Trigger the GitHub Actions workflow
       setTimeout(() => {
-        fetch(`/api/tickets/${ticketId}/status`, {
+        fetch(`/api/tickets/${ticketId}/start-agent`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ status: "in_progress" }),
+        }).then(async (res) => {
+          if (!res.ok) {
+            const data = await res.json();
+            if (data.setup_required) {
+              alert("Please install the AutoBuild workflow in your repository. Check the project settings for instructions.");
+            } else if (data.error) {
+              alert(`Failed to start agent: ${data.error}`);
+            }
+          }
+        }).catch((err) => {
+          console.error("Failed to trigger agent:", err);
         });
       }, 500);
     }

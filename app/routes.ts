@@ -25,5 +25,7 @@ export default [
 
   // API routes
   route("api/tickets/:id/status", "routes/api.tickets.$id.status.tsx"),
+  route("api/tickets/:id/start-agent", "routes/api.tickets.$id.start-agent.tsx"),
+  route("api/agent-callback", "routes/api.agent-callback.tsx"),
   route("api/health", "routes/api.health.tsx"),
 ] satisfies RouteConfig;
