@@ -1,0 +1,301 @@
+{
+  "buildManifest": {
+    "serverBundles": {
+      "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0": {
+        "id": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+        "file": "build/server/nodejs_eyJydW50aW1lIjoibm9kZWpzIn0/index.js",
+        "config": {
+          "runtime": "nodejs"
+        }
+      }
+    },
+    "routeIdToServerBundleId": {
+      "routes/home": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/auth.github": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/auth.github.callback": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/auth.github.not-configured": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/auth.logout": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/dashboard._index": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/dashboard.projects.new": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/dashboard.projects.$id": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/dashboard.settings": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.tickets.$id.status": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.health": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
+    },
+    "routes": {
+      "root": {
+        "id": "root",
+        "file": "app/root.tsx",
+        "path": "",
+        "config": {}
+      },
+      "routes/home": {
+        "id": "routes/home",
+        "parentId": "root",
+        "file": "app/routes/home.tsx",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/auth.github": {
+        "id": "routes/auth.github",
+        "parentId": "root",
+        "file": "app/routes/auth.github.tsx",
+        "path": "auth/github",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/auth.github.callback": {
+        "id": "routes/auth.github.callback",
+        "parentId": "root",
+        "file": "app/routes/auth.github.callback.tsx",
+        "path": "auth/github/callback",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/auth.github.not-configured": {
+        "id": "routes/auth.github.not-configured",
+        "parentId": "root",
+        "file": "app/routes/auth.github.not-configured.tsx",
+        "path": "auth/github/not-configured",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/auth.logout": {
+        "id": "routes/auth.logout",
+        "parentId": "root",
+        "file": "app/routes/auth.logout.tsx",
+        "path": "auth/logout",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/dashboard": {
+        "id": "routes/dashboard",
+        "parentId": "root",
+        "file": "app/routes/dashboard.tsx",
+        "config": {}
+      },
+      "routes/dashboard._index": {
+        "id": "routes/dashboard._index",
+        "parentId": "routes/dashboard",
+        "file": "app/routes/dashboard._index.tsx",
+        "path": "dashboard",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/dashboard.projects.new": {
+        "id": "routes/dashboard.projects.new",
+        "parentId": "routes/dashboard",
+        "file": "app/routes/dashboard.projects.new.tsx",
+        "path": "dashboard/projects/new",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/dashboard.projects.$id": {
+        "id": "routes/dashboard.projects.$id",
+        "parentId": "routes/dashboard",
+        "file": "app/routes/dashboard.projects.$id.tsx",
+        "path": "dashboard/projects/:id",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/dashboard.settings": {
+        "id": "routes/dashboard.settings",
+        "parentId": "routes/dashboard",
+        "file": "app/routes/dashboard.settings.tsx",
+        "path": "dashboard/settings",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.tickets.$id.status": {
+        "id": "routes/api.tickets.$id.status",
+        "parentId": "root",
+        "file": "app/routes/api.tickets.$id.status.tsx",
+        "path": "api/tickets/:id/status",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.health": {
+        "id": "routes/api.health",
+        "parentId": "root",
+        "file": "app/routes/api.health.tsx",
+        "path": "api/health",
+        "config": {
+          "runtime": "nodejs"
+        }
+      }
+    }
+  },
+  "reactRouterConfig": {
+    "appDirectory": "/Users/kreber/Documents/code/personal/autobuild-agent/app",
+    "basename": "/",
+    "buildDirectory": "/Users/kreber/Documents/code/personal/autobuild-agent/build",
+    "future": {
+      "unstable_optimizeDeps": false,
+      "unstable_subResourceIntegrity": false,
+      "unstable_trailingSlashAwareDataRequests": false,
+      "v8_middleware": false,
+      "v8_splitRouteModules": false,
+      "v8_viteEnvironmentApi": false
+    },
+    "routes": {
+      "root": {
+        "id": "root",
+        "file": "root.tsx",
+        "path": ""
+      },
+      "routes/home": {
+        "id": "routes/home",
+        "parentId": "root",
+        "file": "routes/home.tsx",
+        "index": true
+      },
+      "routes/auth.github": {
+        "id": "routes/auth.github",
+        "parentId": "root",
+        "file": "routes/auth.github.tsx",
+        "path": "auth/github"
+      },
+      "routes/auth.github.callback": {
+        "id": "routes/auth.github.callback",
+        "parentId": "root",
+        "file": "routes/auth.github.callback.tsx",
+        "path": "auth/github/callback"
+      },
+      "routes/auth.github.not-configured": {
+        "id": "routes/auth.github.not-configured",
+        "parentId": "root",
+        "file": "routes/auth.github.not-configured.tsx",
+        "path": "auth/github/not-configured"
+      },
+      "routes/auth.logout": {
+        "id": "routes/auth.logout",
+        "parentId": "root",
+        "file": "routes/auth.logout.tsx",
+        "path": "auth/logout"
+      },
+      "routes/dashboard": {
+        "id": "routes/dashboard",
+        "parentId": "root",
+        "file": "routes/dashboard.tsx"
+      },
+      "routes/dashboard._index": {
+        "id": "routes/dashboard._index",
+        "parentId": "routes/dashboard",
+        "file": "routes/dashboard._index.tsx",
+        "path": "dashboard"
+      },
+      "routes/dashboard.projects.new": {
+        "id": "routes/dashboard.projects.new",
+        "parentId": "routes/dashboard",
+        "file": "routes/dashboard.projects.new.tsx",
+        "path": "dashboard/projects/new"
+      },
+      "routes/dashboard.projects.$id": {
+        "id": "routes/dashboard.projects.$id",
+        "parentId": "routes/dashboard",
+        "file": "routes/dashboard.projects.$id.tsx",
+        "path": "dashboard/projects/:id"
+      },
+      "routes/dashboard.settings": {
+        "id": "routes/dashboard.settings",
+        "parentId": "routes/dashboard",
+        "file": "routes/dashboard.settings.tsx",
+        "path": "dashboard/settings"
+      },
+      "routes/api.tickets.$id.status": {
+        "id": "routes/api.tickets.$id.status",
+        "parentId": "root",
+        "file": "routes/api.tickets.$id.status.tsx",
+        "path": "api/tickets/:id/status"
+      },
+      "routes/api.health": {
+        "id": "routes/api.health",
+        "parentId": "root",
+        "file": "routes/api.health.tsx",
+        "path": "api/health"
+      }
+    },
+    "routeDiscovery": {
+      "mode": "lazy",
+      "manifestPath": "/__manifest"
+    },
+    "serverBuildFile": "index.js",
+    "serverModuleFormat": "esm",
+    "ssr": true,
+    "allowedActionOrigins": false,
+    "unstable_routeConfig": [
+      {
+        "id": "root",
+        "path": "",
+        "file": "root.tsx",
+        "children": [
+          {
+            "file": "routes/home.tsx",
+            "index": true
+          },
+          {
+            "file": "routes/auth.github.tsx",
+            "path": "auth/github"
+          },
+          {
+            "file": "routes/auth.github.callback.tsx",
+            "path": "auth/github/callback"
+          },
+          {
+            "file": "routes/auth.github.not-configured.tsx",
+            "path": "auth/github/not-configured"
+          },
+          {
+            "file": "routes/auth.logout.tsx",
+            "path": "auth/logout"
+          },
+          {
+            "file": "routes/dashboard.tsx",
+            "children": [
+              {
+                "file": "routes/dashboard._index.tsx",
+                "path": "dashboard"
+              },
+              {
+                "file": "routes/dashboard.projects.new.tsx",
+                "path": "dashboard/projects/new"
+              },
+              {
+                "file": "routes/dashboard.projects.$id.tsx",
+                "path": "dashboard/projects/:id"
+              },
+              {
+                "file": "routes/dashboard.settings.tsx",
+                "path": "dashboard/settings"
+              }
+            ]
+          },
+          {
+            "file": "routes/api.tickets.$id.status.tsx",
+            "path": "api/tickets/:id/status"
+          },
+          {
+            "file": "routes/api.health.tsx",
+            "path": "api/health"
+          }
+        ]
+      }
+    ]
+  },
+  "viteConfig": {
+    "build": {
+      "assetsDir": "assets"
+    }
+  }
+}
