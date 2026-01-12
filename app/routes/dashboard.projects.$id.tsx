@@ -1,6 +1,7 @@
 import { redirect, Link } from "react-router";
 import type { Route } from "./+types/dashboard.projects.$id";
 import { KanbanBoard } from "~/components/kanban-board";
+import { WorkflowSetupDialog } from "~/components/workflow-setup-dialog";
 import { Button } from "~/components/ui/button";
 import { ArrowLeft, Github, ExternalLink, Settings } from "lucide-react";
 import type { TicketStatus } from "~/types/database";
@@ -220,6 +221,7 @@ export default function ProjectBoard({
             </a>
           </div>
           <div className="flex items-center gap-2">
+            <WorkflowSetupDialog repoFullName={project.github_repo_full_name} />
             {!hasApiKey && (
               <Button variant="outline" size="sm" asChild>
                 <Link to="/dashboard/settings">
