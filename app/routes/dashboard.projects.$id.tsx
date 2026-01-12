@@ -33,6 +33,11 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     throw redirect("/dashboard");
   }
 
+  // Redirect if project is deleted
+  if (project.deleted_at) {
+    throw redirect("/dashboard");
+  }
+
   const tickets = await db
     .selectFrom("tickets")
     .selectAll()
