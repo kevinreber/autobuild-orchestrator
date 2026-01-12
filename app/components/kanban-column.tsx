@@ -31,12 +31,21 @@ interface KanbanColumnProps {
 }
 
 const statusColors: Record<TicketStatus, string> = {
-  backlog: "bg-gray-100 border-gray-300",
-  ready: "bg-blue-50 border-blue-300",
-  in_progress: "bg-yellow-50 border-yellow-300",
-  in_review: "bg-purple-50 border-purple-300",
-  completed: "bg-green-50 border-green-300",
-  failed: "bg-red-50 border-red-300",
+  backlog: "bg-slate-500/10 border-slate-500/30",
+  ready: "bg-blue-500/10 border-blue-500/30",
+  in_progress: "bg-amber-500/10 border-amber-500/30",
+  in_review: "bg-purple-500/10 border-purple-500/30",
+  completed: "bg-emerald-500/10 border-emerald-500/30",
+  failed: "bg-red-500/10 border-red-500/30",
+};
+
+const statusHeaderColors: Record<TicketStatus, string> = {
+  backlog: "text-slate-400",
+  ready: "text-blue-400",
+  in_progress: "text-amber-400",
+  in_review: "text-purple-400",
+  completed: "text-emerald-400",
+  failed: "text-red-400",
 };
 
 export function KanbanColumn({
@@ -63,16 +72,16 @@ export function KanbanColumn({
     <div
       ref={setNodeRef}
       className={cn(
-        "flex flex-col w-80 min-w-80 rounded-lg border-2 bg-muted/30",
+        "flex flex-col w-80 min-w-80 rounded-xl border bg-card/50 backdrop-blur-sm transition-all duration-200",
         statusColors[id],
-        isOver && "ring-2 ring-primary ring-offset-2"
+        isOver && "ring-2 ring-primary ring-offset-2 ring-offset-background"
       )}
     >
       {/* Column Header */}
-      <div className="flex items-center justify-between p-3 border-b">
+      <div className="flex items-center justify-between p-3 border-b border-border/50">
         <div className="flex items-center gap-2">
-          <h3 className="font-semibold text-sm">{title}</h3>
-          <span className="text-xs text-muted-foreground bg-background px-2 py-0.5 rounded-full">
+          <h3 className={cn("font-semibold text-sm", statusHeaderColors[id])}>{title}</h3>
+          <span className="text-xs text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
             {tickets.length}
           </span>
         </div>
@@ -153,7 +162,7 @@ export function KanbanColumn({
           ))}
         </SortableContext>
         {tickets.length === 0 && (
-          <div className="text-center py-8 text-muted-foreground text-sm">
+          <div className="text-center py-8 text-muted-foreground/50 text-sm italic">
             No tickets
           </div>
         )}

@@ -93,9 +93,9 @@ export function TicketCard({ ticket, isDragging }: TicketCardProps) {
         ref={setNodeRef}
         style={style}
         className={cn(
-          "cursor-grab active:cursor-grabbing",
-          (isDragging || isSortableDragging) && "opacity-50 shadow-lg",
-          isInProgress && "ring-2 ring-yellow-400 animate-pulse"
+          "cursor-grab active:cursor-grabbing card-hover bg-card/80 backdrop-blur-sm",
+          (isDragging || isSortableDragging) && "opacity-50 shadow-lg scale-105",
+          isInProgress && "ring-2 ring-amber-400/50 border-amber-400/30"
         )}
         {...attributes}
         {...listeners}
@@ -168,7 +168,7 @@ export function TicketCard({ ticket, isDragging }: TicketCardProps) {
               {ticket.status.replace("_", " ")}
             </Badge>
             {isInProgress && (
-              <Loader2 className="h-3 w-3 animate-spin text-yellow-600" />
+              <Loader2 className="h-3 w-3 animate-spin text-amber-400" />
             )}
             {haspr && (
               <a
