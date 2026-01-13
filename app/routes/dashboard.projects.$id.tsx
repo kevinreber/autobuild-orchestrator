@@ -4,7 +4,7 @@ import { KanbanBoard } from "~/components/kanban-board";
 import { WorkflowSetupDialog } from "~/components/workflow-setup-dialog";
 import { Button } from "~/components/ui/button";
 import { ArrowLeft, Github, ExternalLink, Settings } from "lucide-react";
-import type { TicketStatus } from "~/types/database";
+import type { TicketStatus, Ticket, TicketDependency } from "~/types/database";
 
 export function meta({ data }: Route.MetaArgs) {
   return [
@@ -46,10 +46,21 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     .orderBy("position", "asc")
     .execute();
 
+  // Fetch all dependencies for tickets in this project
+  const dependencies = await db
+    .selectFrom("ticket_dependencies")
+    .selectAll()
+    .where(
+      "ticket_id",
+      "in",
+      tickets.map((t) => t.id)
+    )
+    .execute();
+
   // Check if user has API key configured
   const hasApiKey = !!user.anthropic_api_key;
 
-  return { project, tickets, hasApiKey };
+  return { project, tickets, dependencies, hasApiKey };
 }
 
 export async function action({ request, params }: Route.ActionArgs) {
@@ -171,6 +182,22 @@ export async function action({ request, params }: Route.ActionArgs) {
             "Only one ticket can be in progress at a time. Please wait for the current ticket to complete.",
         };
       }
+
+      // Check if ticket has uncompleted dependencies
+      const dependencies = await db
+        .selectFrom("ticket_dependencies")
+        .innerJoin("tickets", "tickets.id", "ticket_dependencies.depends_on_ticket_id")
+        .select(["tickets.id", "tickets.title", "tickets.status"])
+        .where("ticket_dependencies.ticket_id", "=", String(ticketId))
+        .execute();
+
+      const uncompletedDeps = dependencies.filter((dep) => dep.status !== "completed");
+      if (uncompletedDeps.length > 0) {
+        const blockerNames = uncompletedDeps.map((d) => `"${d.title}"`).join(", ");
+        return {
+          error: `This ticket is blocked by incomplete dependencies: ${blockerNames}. Complete those tickets first.`,
+        };
+      }
     }
 
     await db
@@ -186,14 +213,126 @@ export async function action({ request, params }: Route.ActionArgs) {
     return { success: true, newStatus };
   }
 
+  if (action === "add-dependency") {
+    const ticketId = formData.get("ticketId");
+    const dependsOnTicketId = formData.get("dependsOnTicketId");
+
+    if (!ticketId || !dependsOnTicketId) {
+      return { error: "Both ticket IDs are required" };
+    }
+
+    if (ticketId === dependsOnTicketId) {
+      return { error: "A ticket cannot depend on itself" };
+    }
+
+    // Verify both tickets belong to this project
+    const ticketIds = [String(ticketId), String(dependsOnTicketId)];
+    const ticketsExist = await db
+      .selectFrom("tickets")
+      .select("id")
+      .where("id", "in", ticketIds)
+      .where("project_id", "=", project.id)
+      .execute();
+
+    if (ticketsExist.length !== 2) {
+      return { error: "One or both tickets not found in this project" };
+    }
+
+    // Check for circular dependency
+    const wouldCreateCycle = await checkCircularDependency(
+      db,
+      String(ticketId),
+      String(dependsOnTicketId)
+    );
+
+    if (wouldCreateCycle) {
+      return { error: "Cannot add dependency: this would create a circular dependency" };
+    }
+
+    // Check if dependency already exists
+    const existingDep = await db
+      .selectFrom("ticket_dependencies")
+      .selectAll()
+      .where("ticket_id", "=", String(ticketId))
+      .where("depends_on_ticket_id", "=", String(dependsOnTicketId))
+      .executeTakeFirst();
+
+    if (existingDep) {
+      return { error: "This dependency already exists" };
+    }
+
+    await db
+      .insertInto("ticket_dependencies")
+      .values({
+        ticket_id: String(ticketId),
+        depends_on_ticket_id: String(dependsOnTicketId),
+      })
+      .execute();
+
+    return { success: true };
+  }
+
+  if (action === "remove-dependency") {
+    const ticketId = formData.get("ticketId");
+    const dependsOnTicketId = formData.get("dependsOnTicketId");
+
+    if (!ticketId || !dependsOnTicketId) {
+      return { error: "Both ticket IDs are required" };
+    }
+
+    await db
+      .deleteFrom("ticket_dependencies")
+      .where("ticket_id", "=", String(ticketId))
+      .where("depends_on_ticket_id", "=", String(dependsOnTicketId))
+      .execute();
+
+    return { success: true };
+  }
+
   return { error: "Invalid action" };
+}
+
+// Helper function to check for circular dependencies
+async function checkCircularDependency(
+  db: ReturnType<typeof import("~/lib/db.server").getDb>,
+  ticketId: string,
+  newDependsOnId: string
+): Promise<boolean> {
+  // If we're adding ticketId -> newDependsOnId,
+  // check if newDependsOnId (directly or transitively) depends on ticketId
+  const visited = new Set<string>();
+  const queue = [newDependsOnId];
+
+  while (queue.length > 0) {
+    const currentId = queue.shift()!;
+    if (currentId === ticketId) {
+      return true; // Found a cycle
+    }
+    if (visited.has(currentId)) {
+      continue;
+    }
+    visited.add(currentId);
+
+    // Get all tickets that currentId depends on
+    const deps = await db
+      .selectFrom("ticket_dependencies")
+      .select("depends_on_ticket_id")
+      .where("ticket_id", "=", currentId)
+      .execute();
+
+    for (const dep of deps) {
+      queue.push(dep.depends_on_ticket_id);
+    }
+  }
+
+  return false;
 }
 
 export default function ProjectBoard({
   loaderData,
   actionData,
 }: Route.ComponentProps) {
-  const { project, tickets, hasApiKey } = loaderData;
+  const { project, tickets, dependencies, hasApiKey } = loaderData;
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)]">
@@ -260,6 +399,7 @@ export default function ProjectBoard({
       <div className="flex-1 overflow-hidden">
         <KanbanBoard
           tickets={tickets}
+          dependencies={dependencies}
           projectId={project.id}
           hasApiKey={hasApiKey}
         />

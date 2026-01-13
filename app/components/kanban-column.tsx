@@ -21,12 +21,14 @@ import { Label } from "~/components/ui/label";
 import { Textarea } from "~/components/ui/textarea";
 import { Plus, Loader2 } from "lucide-react";
 import { cn } from "~/lib/utils";
-import type { Ticket, TicketStatus } from "~/types/database";
+import type { Ticket, TicketStatus, TicketDependency } from "~/types/database";
 
 interface KanbanColumnProps {
   id: TicketStatus;
   title: string;
   tickets: Ticket[];
+  allTickets: Ticket[];
+  dependencies: TicketDependency[];
   projectId: string;
 }
 
@@ -52,6 +54,8 @@ export function KanbanColumn({
   id,
   title,
   tickets,
+  allTickets,
+  dependencies,
   projectId,
 }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id });
@@ -158,7 +162,12 @@ export function KanbanColumn({
           strategy={verticalListSortingStrategy}
         >
           {tickets.map((ticket) => (
-            <TicketCard key={ticket.id} ticket={ticket} />
+            <TicketCard
+              key={ticket.id}
+              ticket={ticket}
+              allTickets={allTickets}
+              dependencies={dependencies}
+            />
           ))}
         </SortableContext>
         {tickets.length === 0 && (
