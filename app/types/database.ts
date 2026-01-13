@@ -63,11 +63,19 @@ export interface AgentExecutionTable {
   error: string | null;
 }
 
+export interface TicketDependencyTable {
+  id: Generated<string>;
+  ticket_id: string;
+  depends_on_ticket_id: string;
+  created_at: ColumnType<Date, never, never>;
+}
+
 export interface Database {
   users: UserTable;
   projects: ProjectTable;
   tickets: TicketTable;
   agent_executions: AgentExecutionTable;
+  ticket_dependencies: TicketDependencyTable;
 }
 
 // Helper types for selecting/inserting
@@ -122,4 +130,18 @@ export type AgentExecution = {
   token_usage: number | null;
   logs: unknown | null;
   error: string | null;
+};
+
+export type TicketDependency = {
+  id: string;
+  ticket_id: string;
+  depends_on_ticket_id: string;
+  created_at: Date;
+};
+
+// Extended ticket type with dependency information
+export type TicketWithDependencies = Ticket & {
+  dependencies: string[]; // IDs of tickets this ticket depends on
+  dependents: string[]; // IDs of tickets that depend on this ticket
+  blockedBy: Ticket[]; // Tickets that are blocking this ticket (not completed)
 };
