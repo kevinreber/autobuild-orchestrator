@@ -75,6 +75,7 @@ export function KanbanColumn({
   return (
     <div
       ref={setNodeRef}
+      data-testid={`kanban-column-${id}`}
       className={cn(
         "flex flex-col w-80 min-w-80 rounded-xl border bg-card/50 backdrop-blur-sm transition-all duration-200",
         statusColors[id],
@@ -84,20 +85,20 @@ export function KanbanColumn({
       {/* Column Header */}
       <div className="flex items-center justify-between p-3 border-b border-border/50">
         <div className="flex items-center gap-2">
-          <h3 className={cn("font-semibold text-sm", statusHeaderColors[id])}>{title}</h3>
-          <span className="text-xs text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
+          <h3 data-testid={`column-title-${id}`} className={cn("font-semibold text-sm", statusHeaderColors[id])}>{title}</h3>
+          <span data-testid={`ticket-count-${id}`} className="text-xs text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
             {tickets.length}
           </span>
         </div>
         {(id === "backlog" || id === "ready") && (
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-6 w-6">
+              <Button variant="ghost" size="icon" className="h-6 w-6" data-testid={`add-ticket-button-${id}`}>
                 <Plus className="h-4 w-4" />
               </Button>
             </DialogTrigger>
-            <DialogContent>
-              <form onSubmit={handleCreateTicket}>
+            <DialogContent data-testid="create-ticket-dialog">
+              <form onSubmit={handleCreateTicket} data-testid="create-ticket-form">
                 <DialogHeader>
                   <DialogTitle>Create New Ticket</DialogTitle>
                   <DialogDescription>
