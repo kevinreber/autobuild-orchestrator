@@ -1,0 +1,113 @@
+version: '3.8'
+
+services:
+  # Main web application
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/autobuild
+      - ORCHESTRATOR_URL=http://orchestrator:8080
+      - MEMORY_SERVICE_URL=http://memory:8000
+      - SESSION_SECRET=${SESSION_SECRET:-dev-secret-change-in-production}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY:-dev-encryption-key-32-bytes!!}
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+      - APP_URL=http://localhost:3000
+    depends_on:
+      db:
+        condition: service_healthy
+      orchestrator:
+        condition: service_started
+      memory:
+        condition: service_started
+    volumes:
+      - ./app:/app/app
+      - ./public:/app/public
+    command: npm run dev
+
+  # Go Agent Orchestrator
+  orchestrator:
+    build:
+      context: ./services/orchestrator-go
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ENV=development
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/autobuild
+      - MEMORY_SERVICE_URL=http://memory:8000
+      - MAX_PARALLEL_JOBS=12
+      - WORKTREE_BASE_PATH=/tmp/autobuild-worktrees
+      - GITHUB_APP_ID=${GITHUB_APP_ID}
+      - GITHUB_INSTALLATION_ID=${GITHUB_INSTALLATION_ID}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - /tmp/autobuild-worktrees:/tmp/autobuild-worktrees
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  # Python Memory & Insights Service
+  memory:
+    build:
+      context: ./services/memory-service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - DEBUG=true
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/autobuild
+      - REDIS_URL=redis://redis:6379
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - EMBEDDING_MODEL=all-MiniLM-L6-v2
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  # PostgreSQL with pgvector
+  db:
+    image: pgvector/pgvector:pg16
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=autobuild
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis for caching
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  default:
+    name: autobuild-network
