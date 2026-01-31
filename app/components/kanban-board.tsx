@@ -14,7 +14,7 @@ import {
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { KanbanColumn } from "./kanban-column";
 import { TicketCard } from "./ticket-card";
-import type { Ticket, TicketStatus } from "~/types/database";
+import type { Ticket, TicketStatus, TicketDependency } from "~/types/database";
 
 const COLUMNS: { id: TicketStatus; title: string }[] = [
   { id: "backlog", title: "Backlog" },
@@ -27,12 +27,14 @@ const COLUMNS: { id: TicketStatus; title: string }[] = [
 
 interface KanbanBoardProps {
   tickets: Ticket[];
+  dependencies: TicketDependency[];
   projectId: string;
   hasApiKey: boolean;
 }
 
 export function KanbanBoard({
   tickets,
+  dependencies,
   projectId,
   hasApiKey,
 }: KanbanBoardProps) {
@@ -144,6 +146,8 @@ export function KanbanBoard({
             id={column.id}
             title={column.title}
             tickets={getTicketsByStatus(column.id)}
+            allTickets={tickets}
+            dependencies={dependencies}
             projectId={projectId}
           />
         ))}
