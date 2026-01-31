@@ -168,6 +168,10 @@ export function TicketCard({
       <Card
         ref={setNodeRef}
         style={style}
+        data-testid="ticket-card"
+        data-ticket-id={ticket.id}
+        data-ticket-status={ticket.status}
+        data-is-blocked={isBlocked}
         className={cn(
           "cursor-grab active:cursor-grabbing card-hover bg-card/80 backdrop-blur-sm",
           (isDragging || isSortableDragging) && "opacity-50 shadow-lg scale-105",
@@ -180,6 +184,7 @@ export function TicketCard({
         <CardHeader className="p-3 pb-2">
           <div className="flex items-start justify-between gap-2">
             <CardTitle
+              data-testid="ticket-title"
               className="text-sm font-medium cursor-pointer hover:underline"
               onClick={() => setIsViewOpen(true)}
             >
@@ -192,6 +197,7 @@ export function TicketCard({
                   size="icon"
                   className="h-6 w-6 shrink-0"
                   onClick={(e) => e.stopPropagation()}
+                  data-testid="ticket-menu-button"
                 >
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
@@ -248,17 +254,18 @@ export function TicketCard({
             <Badge
               variant={ticket.status as any}
               className="text-xs capitalize"
+              data-testid="ticket-status-badge"
             >
               {ticket.status.replace("_", " ")}
             </Badge>
             {isBlocked && (
-              <Badge variant="outline" className="text-xs text-orange-400 border-orange-400/50">
+              <Badge variant="outline" className="text-xs text-orange-400 border-orange-400/50" data-testid="blocked-indicator">
                 <Lock className="h-2.5 w-2.5 mr-1" />
                 Blocked
               </Badge>
             )}
             {ticketDependencies.length > 0 && !isBlocked && (
-              <Badge variant="outline" className="text-xs text-blue-400 border-blue-400/50">
+              <Badge variant="outline" className="text-xs text-blue-400 border-blue-400/50" data-testid="dependency-indicator">
                 <Link2 className="h-2.5 w-2.5 mr-1" />
                 {ticketDependencies.length}
               </Badge>
@@ -293,7 +300,7 @@ export function TicketCard({
 
       {/* View Dialog */}
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl" data-testid="view-ticket-dialog">
           <DialogHeader>
             <DialogTitle>{ticket.title}</DialogTitle>
             <DialogDescription>
@@ -372,8 +379,8 @@ export function TicketCard({
 
       {/* Edit Dialog */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent>
-          <form onSubmit={handleEdit}>
+        <DialogContent data-testid="edit-ticket-dialog">
+          <form onSubmit={handleEdit} data-testid="edit-ticket-form">
             <DialogHeader>
               <DialogTitle>Edit Ticket</DialogTitle>
             </DialogHeader>
@@ -414,7 +421,7 @@ export function TicketCard({
 
       {/* Delete Dialog */}
       <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
-        <DialogContent>
+        <DialogContent data-testid="delete-ticket-dialog">
           <DialogHeader>
             <DialogTitle>Delete Ticket</DialogTitle>
             <DialogDescription>
@@ -435,7 +442,7 @@ export function TicketCard({
 
       {/* Dependency Dialog */}
       <Dialog open={isDependencyOpen} onOpenChange={setIsDependencyOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg" data-testid="dependency-dialog">
           <DialogHeader>
             <DialogTitle>Manage Dependencies</DialogTitle>
             <DialogDescription>
@@ -450,10 +457,12 @@ export function TicketCard({
                 <Label className="text-muted-foreground mb-2 block">
                   Current Dependencies
                 </Label>
-                <div className="space-y-2">
+                <div className="space-y-2" data-testid="dependency-list">
                   {ticketDependencies.map((dep) => (
                     <div
                       key={dep.id}
+                      data-testid="dependency-item"
+                      data-dependency-id={dep.id}
                       className="flex items-center justify-between gap-2 p-2 rounded-md bg-muted/50"
                     >
                       <div className="flex items-center gap-2 min-w-0">
